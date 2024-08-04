@@ -1,9 +1,9 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from books.models import Book, BookStatus
 
 
 class BookSerializer(ModelSerializer):
-    """ Сериализатор книг """
+    """Сериализатор книг"""
 
     class Meta:
         model = Book
@@ -11,7 +11,7 @@ class BookSerializer(ModelSerializer):
 
 
 class BookStatusSerializer(ModelSerializer):
-    """ Сериализатор статуса книг """
+    """Сериализатор статуса книг"""
 
     class Meta:
         model = BookStatus

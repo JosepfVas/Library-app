@@ -1,5 +1,6 @@
 from users.models import User
 from users.serializers import UserSerializer
+from rest_framework.permissions import AllowAny
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
@@ -11,10 +12,11 @@ from rest_framework.generics import (
 
 # User Views
 class UserCreateAPIView(CreateAPIView):
-    """ Создание пользователя """
+    """Создание пользователя"""
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         user = serializer.save(is_active=True)
@@ -23,27 +25,27 @@ class UserCreateAPIView(CreateAPIView):
 
 
 class UserListAPIView(ListAPIView):
-    """ Список всех пользователей """
+    """Список всех пользователей"""
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserRetrieveAPIView(RetrieveAPIView):
-    """ Вывод одного пользователя """
+    """Вывод одного пользователя"""
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserUpdateAPIView(UpdateAPIView):
-    """ Обновление пользователя """
+    """Обновление пользователя"""
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserDeleteAPIView(DestroyAPIView):
-    """ Удаление пользователя """
+    """Удаление пользователя"""
 
     queryset = User.objects.all()

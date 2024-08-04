@@ -16,6 +16,9 @@ django-filter = "^24.2"
 pillow = "^10.4.0"
 
 
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

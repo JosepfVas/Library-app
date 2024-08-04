@@ -3,7 +3,7 @@ from authors.models import Author
 
 
 class AuthorSerializer(ModelSerializer):
-    """ Сериализатор автора """
+    """Сериализатор автора"""
 
     class Meta:
         model = Author
