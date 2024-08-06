@@ -2,6 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from books.filters import BookFilter
 from books.models import Book, BookStatus
 from books.paginators import BooksPaginator
+from books.permissions import IsReader, IsModer, IsLibrarian
 from books.serializers import BookSerializer, BookStatusSerializer
 from rest_framework import status, generics
 from rest_framework.response import Response
@@ -22,6 +23,7 @@ class BookCreateAPIView(generics.CreateAPIView):
 
     serializer_class = BookSerializer
     queryset = Book.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsLibrarian]
 
 
 class BookListAPIView(generics.ListAPIView):
@@ -32,6 +34,7 @@ class BookListAPIView(generics.ListAPIView):
     pagination_class = BooksPaginator
     filter_backends = [DjangoFilterBackend]
     filterset_class = BookFilter
+    permission_classes = [IsAuthenticated, IsReader | IsModer | IsLibrarian]
 
 
 class BookRetrieveAPIView(generics.RetrieveAPIView):
@@ -39,6 +42,7 @@ class BookRetrieveAPIView(generics.RetrieveAPIView):
 
     serializer_class = BookSerializer
     queryset = Book.objects.all()
+    permission_classes = [IsAuthenticated, IsReader | IsModer | IsLibrarian]
 
 
 class BookUpdateAPIView(generics.UpdateAPIView):
@@ -46,12 +50,14 @@ class BookUpdateAPIView(generics.UpdateAPIView):
 
     serializer_class = BookSerializer
     queryset = Book.objects.all()
+    permission_classes = [IsAuthenticated | IsModer | IsLibrarian]
 
 
 class BookDeleteAPIView(generics.DestroyAPIView):
     """Удаление книги"""
 
     queryset = Book.objects.all()
+    permission_classes = [IsAuthenticated, IsModer]
 
 
 # ----------------------------------------------------------------
@@ -65,6 +71,7 @@ class BookStatusListAPIView(generics.ListAPIView):
     serializer_class = BookStatusSerializer
     queryset = BookStatus.objects.all().order_by("id")
     pagination_class = BooksPaginator
+    permission_classes = [IsAuthenticated, IsModer | IsLibrarian]
 
 
 class BookStatusRetrieveAPIView(generics.ListAPIView):
@@ -72,12 +79,13 @@ class BookStatusRetrieveAPIView(generics.ListAPIView):
 
     serializer_class = BookStatusSerializer
     queryset = BookStatus.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsLibrarian]
 
 
 class TakeBookView(APIView):
     """Взять книгу"""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsReader]
 
     def post(self, request, book_id):
         book = get_object_or_404(Book, id=book_id)
@@ -95,7 +103,6 @@ class TakeBookView(APIView):
             returned_at=None,
         )
 
-        # Логируем взятие книги
         logger.info(
             f"Пользователь {request.user.username} взял книгу {book.title} в {book_status.taken_at}"
         )
@@ -104,7 +111,7 @@ class TakeBookView(APIView):
 
 
 class ReturnBookView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsReader]
 
     def post(self, request, book_id):
         book_status = get_object_or_404(BookStatus, book_id=book_id, status="borrowed")

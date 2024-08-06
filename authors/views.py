@@ -2,7 +2,8 @@ from rest_framework import generics
 from authors.models import Author
 from authors.paginators import AuthorsPaginator
 from authors.serializers import AuthorSerializer
-
+from books.permissions import IsModer, IsLibrarian, IsReader
+from rest_framework.permissions import IsAuthenticated
 
 # CRUD для автора.
 
@@ -12,6 +13,7 @@ class AuthorCreateAPIView(generics.CreateAPIView):
 
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsLibrarian]
 
 
 class AuthorListAPIView(generics.ListAPIView):
@@ -27,6 +29,7 @@ class AuthorRetrieveAPIView(generics.RetrieveAPIView):
 
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsLibrarian | IsReader]
 
 
 class AuthorUpdateAPIView(generics.UpdateAPIView):
@@ -34,9 +37,11 @@ class AuthorUpdateAPIView(generics.UpdateAPIView):
 
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsLibrarian]
 
 
 class AuthorDeleteAPIView(generics.DestroyAPIView):
     """Удаление автора"""
 
     queryset = Author.objects.all()
+    permission_classes = [IsAuthenticated, IsModer]
